@@ -1,6 +1,9 @@
 import chalk from "chalk";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function extraiLinks(texto) {
   const regex = /\[([^\]]*)\]\((https?:\/\/[^$#\s]*.[^\s]*)\)/gm;
@@ -39,17 +42,20 @@ function trataErro(erro) {
   // }
 }
 // função executada de forma assíncrona utilizando async await
-async function pegaArquivo(filepath) {
-  const caminhoAbsoluto = path.join(__dirname, "..", filepath);
+async function pegaArquivo(caminho) {
+  const caminhoAbsoluto = path.join(__dirname, "..", caminho);
   const encoding = "utf-8";
+
   try {
     const arquivos = await fs.promises.readdir(caminhoAbsoluto, { encoding });
-    const result = await Promise.all(arquivos.map( async (arquivo) => {
-      const localArquivo = `${caminhoAbsoluto}/${arquivo}`;
-      const texto = await fs.promises.readFile(localArquivo, encoding);
-      return extraiLinks(texto);
-    }))
-    console.log(result);
+    const result = await Promise.all(
+      arquivos.map(async (arquivo) => {
+        const localArquivo = `${caminhoAbsoluto}/${arquivo}`;
+        const texto = await fs.promises.readFile(localArquivo, encoding);
+        return extraiLinks(texto);
+      })
+    );
+    return result;
   } catch (erro) {
     trataErro(erro);
   }
