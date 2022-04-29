@@ -22,20 +22,11 @@ function trataErro(erro) {
 }
 
 // função executada de forma assíncrona utilizando async await
-async function pegaArquivo(caminho) {
-  const caminhoAbsoluto = path.join(__dirname, "..", caminho);
+async function pegaArquivo(caminhoDoArquivo) {
   const encoding = "utf-8";
-
   try {
-    const arquivos = await fs.promises.readdir(caminhoAbsoluto, { encoding });
-    const result = await Promise.all(
-      arquivos.map(async (arquivo) => {
-        const localArquivo = `${caminhoAbsoluto}/${arquivo}`;
-        const texto = await fs.promises.readFile(localArquivo, encoding);
-        return extraiLinks(texto);
-      })
-    );
-    return result;
+    const texto = await fs.promises.readFile(caminhoDoArquivo, encoding);
+    return extraiLinks(texto);
   } catch (erro) {
     trataErro(erro);
   }
